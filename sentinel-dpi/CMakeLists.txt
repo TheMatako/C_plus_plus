@@ -3,6 +3,8 @@
 ## == Author:  TheMatako   == ##
 ## ========================== ##
 
+## CMakeLists.txt
+
 cmake_minimum_required(VERSION 3.16)
 
 project(sentinel-dpi LANGUAGES CXX)
@@ -15,4 +17,7 @@ add_compile_options(-Wall -Wextra -Wpedantic -Wshadow -Wnon-virtual-dtor)
 
 add_executable(sentinel
     src/main.cpp
+    # Protocols
+    src/protocols/ProtocolLayer.cpp
+    src/protocols/IPv4Layer.cpp
 )
