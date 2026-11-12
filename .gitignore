@@ -1,0 +1,17 @@
+# Build & CMake
+build/
+cmake-build-*/
+*.o
+*.obj
+*.a
+*.so
+*.out
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Packet capture
+*.pcap
+*.pcapng
