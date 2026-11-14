@@ -58,5 +58,8 @@ class TCPLayer : public ProtocolLayer {
         std::string getName() const override;
         void print(std::ostream& os) const override;
 
+        /// @brief Checks if the TCP frame contains the requested flag
+        /// @param flag The precise flag to look for.
+        /// @return A boolean, true if flag is found, false otherwise.
         bool hasFlag(uint8_t flag) const;
 };
