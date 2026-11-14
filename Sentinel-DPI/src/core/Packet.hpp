@@ -30,6 +30,21 @@ class Packet {
         const std::vector<std::unique_ptr<ProtocolLayer>>& getLayers() const;
         std::size_t layerCount() const;
         double getTimestamp() const;
+
+
+        /// @brief Retrieves the first protocol layer matching the requested type.
+        /// @tparam T The concrete ProtocolLayer subclass to look for.
+        /// @return A const pointer to the layer if found, or nullptr otherwise.
+        template <typename T>
+        const T* getLayer() const {
+            for (const auto& layer : layers_) {
+                const T* casted = dynamic_cast<const T*>(layer.get());
+                if (casted != nullptr) {
+                    return casted;
+                }
+            }
+            return nullptr;
+        }
 };
 
 std::ostream& operator<<(std::ostream& os, const Packet& packet);

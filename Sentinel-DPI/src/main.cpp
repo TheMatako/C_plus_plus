@@ -27,7 +27,12 @@ int main() {
     packet.addLayer(std::make_unique<TCPLayer>(8080, 80, TCPLayer::FLAG_SYN | TCPLayer::FLAG_ACK));
     packet.addLayer(std::make_unique<UDPLayer>(53, 53));
     packet.setPayload({0x48, 0x54, 0x54, 0x50});
-    std::cout << packet;
 
+    
+    std::cout << packet;
+    const TCPLayer* tcp = packet.getLayer<TCPLayer>();
+    if (tcp != nullptr && tcp->hasFlag(TCPLayer::FLAG_SYN)) {
+        std::cout << "TCP Layer has flag SYN\n";
+    }
     return 0;
 }
