@@ -20,6 +20,7 @@ add_executable(sentinel
     # Protocols
     src/protocols/ProtocolLayer.cpp
     src/protocols/IPv4Layer.cpp
+    src/protocols/TCPLayer.cpp
     # Core
     src/core/Packet.cpp
 )
