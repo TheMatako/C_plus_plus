@@ -3,7 +3,7 @@
 // == Author:  TheMatako   == //
 // ========================== //
 
-// src/parser/PackerParser.cpp
+// src/parser/PacketParser.cpp
 
 #include "PacketParser.hpp"
 #include "../protocols/EthernetLayer.hpp"
@@ -13,22 +13,28 @@
 
 #include <memory>
 
-Packet PacketParser::parse(std::span<const uint8_t> rawData, double timestamp, std::string_view firstProtocol) {
+Packet PacketParser::parse(std::span<const uint8_t> rawData, double timestamp, ProtocolType firstProtocol) {
     Packet packet(timestamp);
-    std::string_view protocol = firstProtocol;
+    ProtocolType protocol = firstProtocol;
     std::size_t offset = 0;
 
-    while (protocol != "Payload" && offset < rawData.size()) {
-        if (protocol == "Ethernet") {
-            protocol = parseEthernet(rawData.subspan(offset), packet, offset);
-        } else if (protocol == "IPv4") {
-            protocol = parseIPv4(rawData.subspan(offset), packet, offset);
-        } else if (protocol == "TCP") {
-            protocol = parseTCP(rawData.subspan(offset), packet, offset);
-        } else if (protocol == "UDP") {
-            protocol = parseUDP(rawData.subspan(offset), packet, offset);
-        } else {
-            protocol = "Payload";
+    while (protocol != ProtocolType::Payload && offset < rawData.size()) {
+        switch (protocol) {
+            case ProtocolType::Ethernet:
+                protocol = parseEthernet(rawData.subspan(offset), packet, offset);
+                break;
+            case ProtocolType::IPv4:
+                protocol = parseIPv4(rawData.subspan(offset), packet, offset);
+                break;
+            case ProtocolType::TCP:
+                protocol = parseTCP(rawData.subspan(offset), packet, offset);
+                break;
+            case ProtocolType::UDP:
+                protocol = parseUDP(rawData.subspan(offset), packet, offset);
+                break;
+            default:
+                protocol = ProtocolType::Payload;
+                break;
         }
     }
     auto remaining = rawData.subspan(offset);
@@ -36,10 +42,10 @@ Packet PacketParser::parse(std::span<const uint8_t> rawData, double timestamp, s
     return packet;
 }
 
-std::string PacketParser::parseEthernet(std::span<const uint8_t> rawData, Packet& packet, std::size_t& offset) {
+ProtocolType PacketParser::parseEthernet(std::span<const uint8_t> rawData, Packet& packet, std::size_t& offset) {
     
     if (rawData.size() < 14) {
-        return "Payload";
+        return ProtocolType::Payload;
     }
 
     constexpr char hexChars[] = "0123456789ABCDEF";
@@ -65,14 +71,14 @@ std::string PacketParser::parseEthernet(std::span<const uint8_t> rawData, Packet
     offset += 14;
 
     switch (etherType) {
-        case EthernetLayer::ETHERTYPE_IPV4: return "IPv4";
-        default:                            return "Payload";
+        case EthernetLayer::ETHERTYPE_IPV4: return ProtocolType::IPv4;
+        default:                            return ProtocolType::Payload;
     }
 }
 
-std::string PacketParser::parseUDP(std::span<const uint8_t> rawData, Packet& packet, std::size_t& offset) {
+ProtocolType PacketParser::parseUDP(std::span<const uint8_t> rawData, Packet& packet, std::size_t& offset) {
     if (rawData.size() < 8) {
-        return "Payload";
+        return ProtocolType::Payload;
     }
 
     uint16_t srcPort = static_cast<uint16_t>(rawData[0]) << 8 | rawData[1];
@@ -81,16 +87,16 @@ std::string PacketParser::parseUDP(std::span<const uint8_t> rawData, Packet& pac
     uint16_t checksum = static_cast<uint16_t>(rawData[6]) << 8 | rawData[7];
     packet.addLayer(std::make_unique<UDPLayer>(srcPort, dstPort, length, checksum));
     offset += 8;
-    return "Payload";
+    return ProtocolType::Payload;
 }
 
-std::string PacketParser::parseIPv4(std::span<const uint8_t> rawData, Packet& packet, std::size_t& offset) {
+ProtocolType PacketParser::parseIPv4(std::span<const uint8_t> rawData, Packet& packet, std::size_t& offset) {
     if (rawData.size() < 20) {
-        return "Payload";
+        return ProtocolType::Payload;
     }
     std::size_t length = 4*(rawData[0] & 0x0F);
     if (length < 20 || length > 60 || rawData.size() < length) {
-        return "Payload";
+        return ProtocolType::Payload;
     }
     std::string srcIp = std::to_string(rawData[12]) + "." +
                         std::to_string(rawData[13]) + "." +
@@ -108,20 +114,20 @@ std::string PacketParser::parseIPv4(std::span<const uint8_t> rawData, Packet& pa
     offset += length;
 
     switch (protocol) {
-        case IPv4Layer::PROTO_ICMP: return "ICMP";
-        case IPv4Layer::PROTO_TCP:  return "TCP";
-        case IPv4Layer::PROTO_UDP:  return "UDP";
-        default:                    return "Payload";
+        case IPv4Layer::PROTO_ICMP: return ProtocolType::ICMP;
+        case IPv4Layer::PROTO_TCP:  return ProtocolType::TCP;
+        case IPv4Layer::PROTO_UDP:  return ProtocolType::UDP;
+        default:                    return ProtocolType::Payload;
     }
 }
 
-std::string PacketParser::parseTCP(std::span<const uint8_t> rawData, Packet& packet, std::size_t& offset) {
+ProtocolType PacketParser::parseTCP(std::span<const uint8_t> rawData, Packet& packet, std::size_t& offset) {
     if (rawData.size() < 20) {
-        return "Payload";
+        return ProtocolType::Payload;
     }
-    std::size_t length = 4*(rawData[12] >> 4 & 0x0F);
+    std::size_t length = 4u*(rawData[12] >> 4 & 0x0F);
     if (length < 20 || length > 60 || rawData.size() < length) {
-        return "Payload";
+        return ProtocolType::Payload;
     }
     
     uint16_t srcPort = (static_cast<uint16_t>(rawData[0]) << 8) | rawData[1];
@@ -142,5 +148,5 @@ std::string PacketParser::parseTCP(std::span<const uint8_t> rawData, Packet& pac
     packet.addLayer(std::make_unique<TCPLayer>(srcPort, dstPort, flags, sequence, ack, dataOffset, windows, checksum));
     offset += length;
 
-    return "Payload";
+    return ProtocolType::Payload;
 }
