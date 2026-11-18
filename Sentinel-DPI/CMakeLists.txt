@@ -26,6 +26,7 @@ add_executable(sentinel
     src/protocols/UDPLayer.cpp
     # Parser
     src/parser/PacketParser.cpp
+    src/parser/PcapReader.cpp
     # Core
     src/core/Packet.cpp
 )
