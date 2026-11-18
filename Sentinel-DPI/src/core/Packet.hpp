@@ -16,7 +16,7 @@
 #include <cstdint>
 
 /// @brief Represents a single captured network packet flowing from the parser to the DPI engine.
-/// Encapsulated the ordered stack of decoded protocol layers, the raw payload, and the capture timestamp.
+/// Encapsulate the ordered stack of decoded protocol layers, the raw payload, and the capture timestamp.
 class Packet {
     private:
         std::vector<std::unique_ptr<ProtocolLayer>> layers_;
