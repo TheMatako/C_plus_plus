@@ -27,6 +27,9 @@ add_executable(sentinel
     # Parser
     src/parser/PacketParser.cpp
     src/parser/PcapReader.cpp
+    # DPI
+    src/dpi/Alert.cpp
+    src/dpi/RuleLoader.cpp
     # Core
     src/core/Packet.cpp
 )
