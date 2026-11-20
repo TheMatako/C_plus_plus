@@ -14,6 +14,7 @@
 #include <memory>
 #include <ostream>
 #include <cstdint>
+#include <concepts>
 
 /// @brief Represents a single captured network packet flowing from the parser to the DPI engine.
 /// Encapsulate the ordered stack of decoded protocol layers, the raw payload, and the capture timestamp.
@@ -35,7 +36,7 @@ class Packet {
         /// @brief Retrieves the first protocol layer matching the requested type.
         /// @tparam T The concrete ProtocolLayer subclass to look for.
         /// @return A const pointer to the layer if found, or nullptr otherwise.
-        template <typename T>
+        template <std::derived_from<ProtocolLayer> T>
         const T* getLayer() const {
             for (const auto& layer : layers_) {
                 const T* casted = dynamic_cast<const T*>(layer.get());

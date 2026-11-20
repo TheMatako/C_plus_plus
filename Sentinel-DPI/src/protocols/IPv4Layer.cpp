@@ -12,11 +12,11 @@
 IPv4Layer::IPv4Layer(std::string srcIp, std::string dstIp, uint8_t protocol, uint8_t ttl)
     : srcIp_(std::move(srcIp)), dstIp_(std::move(dstIp)), protocol_(protocol), ttl_(ttl) {}
 
-std::string IPv4Layer::getSrcIp() const {
+const std::string& IPv4Layer::getSrcIp() const {
     return srcIp_;
 }
 
-std::string IPv4Layer::getDstIp() const {
+const std::string& IPv4Layer::getDstIp() const {
     return dstIp_;
 }
 

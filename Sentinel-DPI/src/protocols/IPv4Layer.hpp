@@ -32,8 +32,8 @@ class IPv4Layer : public ProtocolLayer {
         IPv4Layer(std::string srcIp, std::string dstIp, uint8_t protocol, uint8_t ttl = 64);
         ~IPv4Layer() override = default;
 
-        std::string getSrcIp() const;
-        std::string getDstIp() const;
+        const std::string& getSrcIp() const;
+        const std::string& getDstIp() const;
         uint8_t getProtocol() const;
         uint8_t getTtl() const;
 

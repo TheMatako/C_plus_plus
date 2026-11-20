@@ -11,10 +11,10 @@
 #include <format>
 #include <utility>
 
-Alert::Alert(double timestamp_, const Rule& rule, ProtocolType protocol_, std::string srcIp_, uint16_t srcPort_, std::string dstIp_, uint16_t dstPort_) : 
-    timestamp(timestamp_), sid(rule.sid), msg(rule.msg), 
-    severity(rule.severity), protocol(protocol_), srcIp(std::move(srcIp_)), 
-    srcPort(srcPort_), dstIp(std::move(dstIp_)), dstPort(dstPort_) {}
+Alert::Alert(double ts, const Rule& rule, ProtocolType proto, std::string sourceIp, uint16_t sourcePort, std::string destinationIp, uint16_t destinationPort) : 
+    timestamp(ts), sid(rule.sid), msg(rule.msg), 
+    severity(rule.severity), protocol(proto), srcIp(std::move(sourceIp)), 
+    srcPort(sourcePort), dstIp(std::move(destinationIp)), dstPort(destinationPort) {}
 
 std::ostream& operator<<(std::ostream& os, const Alert& alert) {
     auto alertTime = std::chrono::zoned_time{std::chrono::current_zone(), std::chrono::sys_time<std::chrono::microseconds>{{std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::duration<double>{alert.timestamp})}}};

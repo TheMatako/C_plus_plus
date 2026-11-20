@@ -70,11 +70,11 @@ std::string TCPLayer::getName() const {
 }
 
 bool TCPLayer::hasFlag(uint8_t flag) const {
-    return (flags_ & flag) != 0;
+    return (flags_ & flag) == flag;
 }
 
 void TCPLayer::print(std::ostream& os) const {
-    const std::array<std::pair<uint8_t, std::string_view>, 6> flagNames = {{
+    static constexpr std::array<std::pair<uint8_t, std::string_view>, 6> flagNames = {{
             {FLAG_FIN, "FIN"}, {FLAG_SYN, "SYN"}, {FLAG_RST, "RST"},
             {FLAG_PSH, "PSH"}, {FLAG_ACK, "ACK"}, {FLAG_URG, "URG"}
         }};

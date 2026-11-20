@@ -24,7 +24,7 @@ struct Alert {
     std::string dstIp;
     uint16_t dstPort;
 
-    Alert(double timestamp_, const Rule& rule, ProtocolType protocol_, std::string srcIp_, uint16_t srcPort_, std::string dstIp_, uint16_t dstPort_);
+    Alert(double ts, const Rule& rule, ProtocolType proto, std::string sourceIp, uint16_t sourcePort, std::string destinationIp, uint16_t destinationPort);
 };
 
 std::ostream& operator<<(std::ostream& os, const Alert& alert);

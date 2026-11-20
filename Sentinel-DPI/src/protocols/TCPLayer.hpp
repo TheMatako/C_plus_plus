@@ -10,7 +10,8 @@
 #include "ProtocolLayer.hpp"
 
 #include <cstdint>
-
+#include <string>
+#include <ostream>
 
 /// @brief Class extending from ProtocolLayer base class to represent the TCP protocol layer.
 /// Contains 8 private attributes for Port source, Port destination, Sequence, Ack, Offset, Flags, Windows, and Checksum.
