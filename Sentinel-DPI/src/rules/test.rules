@@ -1,5 +1,5 @@
-# Test rules
-
-alert tcp 192.168.1.50 any -> 10.0.0.0 80 (msg:"SQL Injection; UNION"; content:"UNION SELECT"; nocase; flags:PA; severity:critical; sid:1000001;)
-alert tcp any any -> any 22 (sid:1000002; severity:medium; flags:S; msg:"SSH SYN Scan";)
-alert ip any any -> any any (msg:"HTTP URL check"; content:"http://evil.com"; sid:1000003;)
+# Test end-to-end SentinelDPI V1
+alert tcp any any -> any 22 (msg:"SSH SYN Scan"; flags:S; severity:medium; sid:1000001;)
+alert tcp 192.168.1.50 any -> 10.0.0.10 80 (msg:"SQL Injection Attempt"; content:"UNION SELECT"; nocase; flags:PA; severity:critical; sid:1000002;)
+alert udp any any -> 8.8.8.8 53 (msg:"Suspicious DNS Query"; content:"evil.com"; severity:high; sid:1000003;)
+alert icmp any any -> 10.0.0.10 any (msg:"ICMP Echo Request"; severity:low; sid:1000004;)

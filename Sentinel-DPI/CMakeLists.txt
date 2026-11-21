@@ -30,6 +30,7 @@ add_executable(sentinel
     # DPI
     src/dpi/Alert.cpp
     src/dpi/RuleLoader.cpp
+    src/dpi/RuleEngine.cpp
     # Core
     src/core/Packet.cpp
 )
